@@ -10,7 +10,8 @@ container.appendChild(title);
 const textarea = document.createElement("textarea");
 textarea.classList.add("textarea");
 container.appendChild(textarea);
-let cursorPos = textarea.selectionStart;
+let selectionStart = textarea.selectionStart;
+let selectionEnd = textarea.selectionEnd;
 
 const keyboard = document.createElement("section");
 keyboard.classList.add("keyboard");
@@ -343,6 +344,19 @@ function removeActiveClass(item) {
   }, 500);
 }
 
+function stayFocused(summ) {
+  textarea.selectionStart = selectionStart - summ;
+  textarea.selectionEnd = selectionStart - summ;
+  textarea.focus();
+}
+
+function addText(text) {
+  selectionStart = textarea.selectionStart;
+  let startText = textarea.value.substring(0, selectionStart);
+  let endText = textarea.value.substring(selectionStart, textarea.value.length);
+  textarea.value = startText + text + endText;
+}
+
 const createKeys = () => {
   currKeyLayout.forEach((key) => {
     if (key === "br") {
@@ -361,15 +375,18 @@ const createKeys = () => {
           keyElement.addEventListener("click", () => {
             let text = textarea.value;
 
-            if (cursorPos === textarea.value.length || cursorPos === 0) {
+            if (
+              selectionStart === textarea.value.length ||
+              selectionStart === 0
+            ) {
               textarea.value = text.slice(0, textarea.value.length - 1);
             } else {
               textarea.value =
-                text.slice(0, cursorPos - 1) +
-                text.slice(cursorPos, textarea.length);
+                text.slice(0, selectionStart - 1) +
+                text.slice(selectionStart, textarea.length);
             }
-            textarea.selectionStart = cursorPos;
-            textarea.selectionEnd = cursorPos;
+            textarea.selectionStart = selectionStart;
+            textarea.selectionEnd = selectionStart;
             textarea.focus();
           });
 
@@ -379,10 +396,10 @@ const createKeys = () => {
           keyElement.textContent = key;
           keyElement.addEventListener("click", () => {
             let text = textarea.value;
-            let cursorPosition = textarea.selectionStart;
+            let selectionStartition = textarea.selectionStart;
             textarea.value =
-              text.slice(0, cursorPosition) +
-              text.slice(cursorPosition + 1, textarea.length);
+              text.slice(0, selectionStartition) +
+              text.slice(selectionStartition + 1, textarea.length);
           });
 
           break;
@@ -456,11 +473,12 @@ function reloadKeys() {
 }
 
 keyboard.addEventListener("mousedown", (e) => {
+  let text = textarea.value;
   e.target.classList.add("active");
   let btns = [...keyboard.getElementsByClassName("keyboard__key")];
 
-  switch (e.target.textContent) {
-    case "ctrl" || "CTRL":
+  switch (e.target.innerText.toLowerCase()) {
+    case "ctrl":
       btns.forEach((item) => {
         if (item.textContent === "ctrl") {
           item.classList.add("active");
@@ -469,7 +487,7 @@ keyboard.addEventListener("mousedown", (e) => {
 
       break;
 
-    case "Tab" || "TAB" || "tab":
+    case "tab":
       textarea.value += "    ";
       btns.forEach((item) => {
         if (
@@ -482,7 +500,7 @@ keyboard.addEventListener("mousedown", (e) => {
       });
       break;
 
-    case "enter" || "Enter" || "ENTER":
+    case "enter":
       e.preventDefault();
       textarea.value += "\n";
       btns.forEach((item) => {
@@ -493,27 +511,30 @@ keyboard.addEventListener("mousedown", (e) => {
 
       break;
 
-    case "backspace" || "BACKSPACE":
-      let text = textarea.value;
-
-      if (cursorPos === textarea.value.length || cursorPos === 0) {
+    case "backspace":
+      text = textarea.value;
+      selectionStart = textarea.selectionStart;
+      if (selectionStart === textarea.value.length || selectionStart === 0) {
         textarea.value = text.slice(0, textarea.value.length - 1);
       } else {
         textarea.value =
-          text.slice(0, cursorPos - 1) + text.slice(cursorPos, textarea.length);
+          text.slice(0, selectionStart - 1) +
+          text.slice(selectionStart - 1, textarea.value.length);
       }
-      textarea.selectionStart = cursorPos;
-      textarea.selectionEnd = cursorPos;
-      textarea.focus();
       break;
 
-    case "del" || "DEL":
-      let cursorPosition = textarea.selectionStart;
-      textarea.value =
-        text.slice(0, cursorPosition) +
-        text.slice(cursorPosition + 1, textarea.length);
+    case "del":
+      text = textarea.value;
+      selectionStart = textarea.selectionStart;
+      if (selectionStart === textarea.value.length || selectionStart === 0) {
+        textarea.value = text.slice(0, textarea.value.length - 1);
+      } else {
+        textarea.value =
+          text.slice(0, selectionStart) +
+          text.slice(selectionStart, textarea.value.length);
+      }
       break;
-    case "shift" || "SHIFT":
+    case "shift":
       isShift = true;
       if (isRus) {
         currKeyLayout = keyLayoutRu;
@@ -536,8 +557,9 @@ keyboard.addEventListener("mousedown", (e) => {
 
       break;
 
-    case "Caps Lock" || "caps lock" || "CAPS LOCK":
+    case "caps lock":
       isCaps = !isCaps;
+      console.log(isCaps);
       btns.forEach((item) => {
         if (
           item.textContent === "Caps Lock" ||
@@ -556,25 +578,27 @@ keyboard.addEventListener("mousedown", (e) => {
       });
       break;
 
-    case "alt" || "ALT":
+    case "alt":
       isAlt = true;
       break;
 
     default:
-      textarea.value += e.key;
       break;
   }
 
   keyboard.addEventListener("mouseup", (e) => {
     removeActiveClass(e.target);
   });
-
   if (e.target.innerText.length > 1) {
     return;
-  } else textarea.value += e.target.innerText;
+  } else {
+    addText(e.target.innerText);
+  }
 });
 
 document.addEventListener("keydown", (e) => {
+  e.preventDefault();
+  let text = textarea.value;
   let btns = [...keyboard.getElementsByClassName("keyboard__key")];
   const btn = btns.find(
     (btn) =>
@@ -594,11 +618,7 @@ document.addEventListener("keydown", (e) => {
     case "Tab":
       textarea.value += "    ";
       btns.forEach((item) => {
-        if (
-          item.textContent === "Tab" ||
-          item.textContent === "TAB" ||
-          item.textContent === "tab"
-        ) {
+        if (item.textContent.toLowerCase() === "tab") {
           item.classList.add("active");
         }
       });
@@ -607,30 +627,37 @@ document.addEventListener("keydown", (e) => {
       e.preventDefault();
       textarea.value += "\n";
       btns.forEach((item) => {
-        if (item.textContent === "enter" || item.textContent === "ENTER") {
+        if (item.textContent.toLowerCase() === "enter") {
           item.classList.add("active");
         }
       });
 
       break;
     case "Backspace":
-      let text = textarea.value;
-
-      if (cursorPos === textarea.value.length || cursorPos === 0) {
+      text = textarea.value;
+      selectionStart = textarea.selectionStart;
+      if (selectionStart === textarea.value.length || selectionStart === 0) {
         textarea.value = text.slice(0, textarea.value.length - 1);
       } else {
         textarea.value =
-          text.slice(0, cursorPos - 1) + text.slice(cursorPos, textarea.length);
+          text.slice(0, selectionStart - 1) +
+          text.slice(selectionStart, textarea.value.length);
       }
-      textarea.selectionStart = cursorPos;
-      textarea.selectionEnd = cursorPos;
+      textarea.selectionStart = selectionStart - 1;
+      textarea.selectionEnd = selectionStart - 1;
       textarea.focus();
+
       break;
-    case "Del":
-      let cursorPosition = textarea.selectionStart;
-      textarea.value =
-        text.slice(0, cursorPosition) +
-        text.slice(cursorPosition + 1, textarea.length);
+    case "Delete":
+      text = textarea.value;
+      selectionStart = textarea.selectionStart;
+      if (selectionStart === textarea.value.length || selectionStart === 0) {
+        textarea.value = text.slice(0, textarea.value.length - 1);
+      } else {
+        textarea.value =
+          text.slice(0, selectionStart) +
+          text.slice(selectionStart, textarea.value.length);
+      }
       break;
     case "Shift":
       isShift = true;
@@ -657,11 +684,7 @@ document.addEventListener("keydown", (e) => {
     case "CapsLock":
       isCaps = !isCaps;
       btns.forEach((item) => {
-        if (
-          item.textContent === "Caps Lock" ||
-          item.textContent === "Caps Lock".toUpperCase() ||
-          item.textContent === "Caps Lock".toLowerCase()
-        ) {
+        if (item.textContent.toLowerCase() === "caps lock") {
           item.classList.add("active");
         }
       });
@@ -676,7 +699,7 @@ document.addEventListener("keydown", (e) => {
     case "Tab":
       textarea.value += "    ";
       btns.forEach((item) => {
-        if (item.textContent === "Tab") {
+        if (item.textContent.toLowerCase() === "tab") {
           item.classList.add("active");
         }
       });
@@ -686,7 +709,7 @@ document.addEventListener("keydown", (e) => {
       break;
 
     default:
-      textarea.value += e.key;
+      addText(e.key);
       break;
   }
 });
@@ -736,11 +759,7 @@ document.addEventListener("keyup", (e) => {
       break;
     case "CapsLock":
       btns.forEach((item) => {
-        if (
-          item.textContent === "Caps Lock" ||
-          item.textContent === "Caps Lock".toUpperCase() ||
-          item.textContent === "Caps Lock".toLowerCase()
-        ) {
+        if (item.textContent.toLowerCase() === "caps lock") {
           removeActiveClass(item);
         }
       });
@@ -760,4 +779,7 @@ document.addEventListener("keyup", (e) => {
       break;
   }
   removeActiveClass(btn);
+});
+document.addEventListener("keydown", (e) => {
+  console.log(e);
 });
