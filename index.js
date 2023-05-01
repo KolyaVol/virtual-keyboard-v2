@@ -152,7 +152,6 @@ const keyLayoutEngShift = [
   "/",
   "enter",
   "shift",
-  "\\",
   "Z",
   "X",
   "C",
@@ -163,6 +162,7 @@ const keyLayoutEngShift = [
   "<",
   ">",
   "?",
+  "br",
   "up arrow",
   "shift",
   "ctrl",
@@ -286,7 +286,6 @@ const keyLayoutRuShift = [
   `/`,
   "enter",
   "shift",
-  "\\",
   "Я",
   "Ч",
   "С",
@@ -297,6 +296,7 @@ const keyLayoutRuShift = [
   "Б",
   "Ю",
   ",",
+  "br",
   "up arrow",
   "shift",
   "ctrl",
@@ -457,6 +457,114 @@ function reloadKeys() {
 
 keyboard.addEventListener("mousedown", (e) => {
   e.target.classList.add("active");
+  let btns = [...keyboard.getElementsByClassName("keyboard__key")];
+
+  switch (e.target.textContent) {
+    case "ctrl" || "CTRL":
+      btns.forEach((item) => {
+        if (item.textContent === "ctrl") {
+          item.classList.add("active");
+        }
+      });
+
+      break;
+
+    case "Tab" || "TAB" || "tab":
+      textarea.value += "    ";
+      btns.forEach((item) => {
+        if (
+          item.textContent === "Tab" ||
+          item.textContent === "TAB" ||
+          item.textContent === "tab"
+        ) {
+          item.classList.add("active");
+        }
+      });
+      break;
+
+    case "enter" || "Enter" || "ENTER":
+      e.preventDefault();
+      textarea.value += "\n";
+      btns.forEach((item) => {
+        if (item.textContent === "enter" || item.textContent === "ENTER") {
+          item.classList.add("active");
+        }
+      });
+
+      break;
+
+    case "backspace" || "BACKSPACE":
+      let text = textarea.value;
+
+      if (cursorPos === textarea.value.length || cursorPos === 0) {
+        textarea.value = text.slice(0, textarea.value.length - 1);
+      } else {
+        textarea.value =
+          text.slice(0, cursorPos - 1) + text.slice(cursorPos, textarea.length);
+      }
+      textarea.selectionStart = cursorPos;
+      textarea.selectionEnd = cursorPos;
+      textarea.focus();
+      break;
+
+    case "del" || "DEL":
+      let cursorPosition = textarea.selectionStart;
+      textarea.value =
+        text.slice(0, cursorPosition) +
+        text.slice(cursorPosition + 1, textarea.length);
+      break;
+    case "shift" || "SHIFT":
+      isShift = true;
+      if (isRus) {
+        currKeyLayout = keyLayoutRu;
+        reloadKeys();
+      } else {
+        currKeyLayout = keyLayoutEng;
+        reloadKeys();
+      }
+      if (isShift && isRus) {
+        currKeyLayout = keyLayoutRuShift;
+        reloadKeys();
+      } else if (isShift && !isRus) {
+        currKeyLayout = keyLayoutEngShift;
+        reloadKeys();
+      }
+
+      if (isShift && isAlt) {
+        isRus = !isRus;
+      }
+
+      break;
+
+    case "Caps Lock" || "caps lock" || "CAPS LOCK":
+      isCaps = !isCaps;
+      btns.forEach((item) => {
+        if (
+          item.textContent === "Caps Lock" ||
+          item.textContent === "Caps Lock".toUpperCase() ||
+          item.textContent === "Caps Lock".toLowerCase()
+        ) {
+          item.classList.add("active");
+        }
+      });
+      btns.forEach((item) => {
+        if (isCaps) {
+          item.innerText = item.innerText.toUpperCase();
+        } else {
+          item.innerText = item.innerText.toLowerCase();
+        }
+      });
+      break;
+
+    case "alt" || "ALT":
+      isAlt = true;
+      break;
+
+    default:
+      textarea.value += e.key;
+      break;
+  }
+
   keyboard.addEventListener("mouseup", (e) => {
     removeActiveClass(e.target);
   });
@@ -478,6 +586,28 @@ document.addEventListener("keydown", (e) => {
     case "Control":
       btns.forEach((item) => {
         if (item.textContent === "ctrl") {
+          item.classList.add("active");
+        }
+      });
+
+      break;
+    case "Tab":
+      textarea.value += "    ";
+      btns.forEach((item) => {
+        if (
+          item.textContent === "Tab" ||
+          item.textContent === "TAB" ||
+          item.textContent === "tab"
+        ) {
+          item.classList.add("active");
+        }
+      });
+      break;
+    case "Enter":
+      e.preventDefault();
+      textarea.value += "\n";
+      btns.forEach((item) => {
+        if (item.textContent === "enter" || item.textContent === "ENTER") {
           item.classList.add("active");
         }
       });
