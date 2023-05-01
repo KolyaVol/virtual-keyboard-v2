@@ -503,12 +503,14 @@ document.addEventListener("keydown", (e) => {
         text.slice(cursorPosition + 1, textarea.length);
       break;
     case "Shift":
-      btns.forEach((item) => {
-        if (item.textContent === "shift") {
-          item.classList.add("active");
-        }
-      });
       isShift = true;
+      if (isRus) {
+        currKeyLayout = keyLayoutRu;
+        reloadKeys();
+      } else {
+        currKeyLayout = keyLayoutEng;
+        reloadKeys();
+      }
       if (isShift && isRus) {
         currKeyLayout = keyLayoutRuShift;
         reloadKeys();
@@ -519,14 +521,6 @@ document.addEventListener("keydown", (e) => {
 
       if (isShift && isAlt) {
         isRus = !isRus;
-      }
-
-      if (isRus) {
-        currKeyLayout = keyLayoutRu;
-        reloadKeys();
-      } else {
-        currKeyLayout = keyLayoutEng;
-        reloadKeys();
       }
 
       break;
@@ -589,6 +583,25 @@ document.addEventListener("keyup", (e) => {
           removeActiveClass(item);
         }
       });
+
+      if (isRus) {
+        currKeyLayout = keyLayoutRu;
+        reloadKeys();
+      } else {
+        currKeyLayout = keyLayoutEng;
+        reloadKeys();
+      }
+      if (isShift && isRus) {
+        currKeyLayout = keyLayoutRuShift;
+        reloadKeys();
+      } else if (isShift && !isRus) {
+        currKeyLayout = keyLayoutEngShift;
+        reloadKeys();
+      }
+
+      if (isShift && isAlt) {
+        isRus = !isRus;
+      }
 
       break;
     case "CapsLock":
