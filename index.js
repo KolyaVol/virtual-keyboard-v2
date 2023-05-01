@@ -531,9 +531,21 @@ document.addEventListener("keydown", (e) => {
 
       break;
     case "CapsLock":
+      isCaps = !isCaps;
       btns.forEach((item) => {
-        if (item.textContent === "Caps Lock") {
+        if (
+          item.textContent === "Caps Lock" ||
+          item.textContent === "Caps Lock".toUpperCase() ||
+          item.textContent === "Caps Lock".toLowerCase()
+        ) {
           item.classList.add("active");
+        }
+      });
+      btns.forEach((item) => {
+        if (isCaps) {
+          item.innerText = item.innerText.toUpperCase();
+        } else {
+          item.innerText = item.innerText.toLowerCase();
         }
       });
       break;
@@ -581,7 +593,11 @@ document.addEventListener("keyup", (e) => {
       break;
     case "CapsLock":
       btns.forEach((item) => {
-        if (item.textContent === "Caps Lock") {
+        if (
+          item.textContent === "Caps Lock" ||
+          item.textContent === "Caps Lock".toUpperCase() ||
+          item.textContent === "Caps Lock".toLowerCase()
+        ) {
           removeActiveClass(item);
         }
       });
