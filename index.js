@@ -337,6 +337,12 @@ if (isRus) {
   reloadKeys();
 } else currKeyLayout = keyLayoutEng;
 
+function removeActiveClass(item) {
+  setTimeout(() => {
+    item.classList.remove("active");
+  }, 500);
+}
+
 const createKeys = () => {
   currKeyLayout.forEach((key) => {
     if (key === "br") {
@@ -389,7 +395,7 @@ const createKeys = () => {
         case "shift":
           keyElement.textContent = key;
           keyElement.addEventListener("mousedown", () => {
-            changeShift();
+            isShift = true;
             keyElement.addEventListener("mouseup", changeShift());
             keyElement.removeEventListener("mouseup", changeShift());
           });
@@ -399,7 +405,7 @@ const createKeys = () => {
         case "alt":
           keyElement.textContent = key;
           keyElement.addEventListener("mousedown", () => {
-            changeAlt();
+            isAlt = true;
             keyElement.addEventListener("mouseup", changeAlt());
             keyElement.removeEventListener("mouseup", changeAlt());
           });
@@ -449,29 +455,33 @@ function reloadKeys() {
   createKeys();
 }
 
-keyboard.addEventListener("click", (e) => {
-  [...keyboard.getElementsByClassName("keyboard__key")].forEach((key) => {
-    key.classList.remove("active");
-  });
-
+keyboard.addEventListener("mousedown", (e) => {
   e.target.classList.add("active");
-  setTimeout(() => {
-    e.target.classList.remove("active");
-  }, 500);
+  keyboard.addEventListener("mouseup", (e) => {
+    removeActiveClass(e.target);
+  });
 
   if (e.target.innerText.length > 1) {
     return;
   } else textarea.value += e.target.innerText;
 });
 
-let btns = [...keyboard.getElementsByClassName("keyboard__key")];
-
 document.addEventListener("keydown", (e) => {
-  const btn = [...btns].find((btn) => btn.textContent === e.key);
+  let btns = [...keyboard.getElementsByClassName("keyboard__key")];
+  const btn = btns.find(
+    (btn) =>
+      btn.textContent === e.key || btn.textContent === e.key.toLowerCase()
+  );
   btn ? btn.classList.add("active") : "";
 
   switch (e.key) {
     case "Control":
+      btns.forEach((item) => {
+        if (item.textContent === "ctrl") {
+          item.classList.add("active");
+        }
+      });
+
       break;
     case "Backspace":
       let text = textarea.value;
@@ -493,8 +503,12 @@ document.addEventListener("keydown", (e) => {
         text.slice(cursorPosition + 1, textarea.length);
       break;
     case "Shift":
+      btns.forEach((item) => {
+        if (item.textContent === "shift") {
+          item.classList.add("active");
+        }
+      });
       isShift = true;
-
       if (isShift && isRus) {
         currKeyLayout = keyLayoutRuShift;
         reloadKeys();
@@ -517,16 +531,22 @@ document.addEventListener("keydown", (e) => {
 
       break;
     case "CapsLock":
+      btns.forEach((item) => {
+        if (item.textContent === "Caps Lock") {
+          item.classList.add("active");
+        }
+      });
+      break;
+    case "Tab":
+      textarea.value += "    ";
+      btns.forEach((item) => {
+        if (item.textContent === "Tab") {
+          item.classList.add("active");
+        }
+      });
       break;
     case "Alt":
       isAlt = true;
-      if (isShift && isAlt) {
-        isRus = !isRus;
-      }
-      if (isRus) {
-        currKeyLayout = keyLayoutRu;
-        reloadKeys();
-      } else currKeyLayout = keyLayoutEng;
       break;
 
     default:
@@ -536,38 +556,49 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-  const btn = [...btns].find(
-    (btn) => btn.textContent.toLowerCase() === e.key.toLowerCase()
+  let btns = [...keyboard.getElementsByClassName("keyboard__key")];
+  const btn = btns.find(
+    (btn) =>
+      btn.textContent === e.key || btn.textContent === e.key.toLowerCase()
   );
-  if (btn) {
-    switch (e.key) {
-      case "Control":
-        break;
-      case "Shift":
-        isShift = false;
-        if (isShift && isRus) {
-          currKeyLayout = keyLayoutRuShift;
-          reloadKeys();
+  switch (e.key) {
+    case "Control":
+      btns.forEach((item) => {
+        if (item.textContent === "ctrl") {
+          removeActiveClass(item);
         }
-        if (isShift && !isRus) {
-          currKeyLayout = keyLayoutEngShift;
-          reloadKeys();
-        }
-        break;
-      case "CapsLock":
-        break;
-      case "Alt":
-        isAlt = false;
-        break;
+      });
 
-      default:
-        break;
-    }
-    setTimeout(() => {
-      btn.classList.remove("active");
-    }, 500);
+      break;
+    case "Shift":
+      isShift = false;
+      btns.forEach((item) => {
+        if (item.textContent === "shift") {
+          removeActiveClass(item);
+        }
+      });
+
+      break;
+    case "CapsLock":
+      btns.forEach((item) => {
+        if (item.textContent === "Caps Lock") {
+          removeActiveClass(item);
+        }
+      });
+      break;
+    case "Tab":
+      btns.forEach((item) => {
+        if (item.textContent === "Tab") {
+          removeActiveClass(item);
+        }
+      });
+      break;
+    case "Alt":
+      isAlt = false;
+      break;
+
+    default:
+      break;
   }
-});
-document.addEventListener("keydown", (e) => {
-  console.log(e);
+  removeActiveClass(btn);
 });
