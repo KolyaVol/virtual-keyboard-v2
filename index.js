@@ -391,10 +391,17 @@ const createKeys = () => {
 createKeys();
 
 function reloadKeys() {
-  [...document.querySelectorAll(".keyboard__line")].forEach((line) => {
-    line.innerHTML = "";
+  let btns = [...keyboard.getElementsByClassName("keyboard__key")];
+  let counter = 0;
+  btns.forEach((item) => {
+    if (counter > 52) {
+      counter++;
+      item.textContent = currKeyLayout[counter];
+    } else {
+      counter++;
+      item.textContent = currKeyLayout[counter - 1];
+    }
   });
-  createKeys();
 }
 
 keyboard.addEventListener("mousedown", (e) => {
@@ -747,7 +754,4 @@ document.addEventListener("keyup", (e) => {
       break;
   }
   removeActiveClass(btn);
-});
-document.addEventListener("keydown", (e) => {
-  console.log(e);
 });
