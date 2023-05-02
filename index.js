@@ -456,8 +456,11 @@ keyboard.addEventListener("mousedown", (e) => {
       } else {
         textarea.value =
           text.slice(0, selectionStart - 1) +
-          text.slice(selectionStart - 1, textarea.value.length);
+          text.slice(selectionStart, textarea.value.length);
       }
+      textarea.selectionStart = selectionStart - 1;
+      textarea.selectionEnd = selectionStart - 1;
+      textarea.focus();
       break;
 
     case "del":
