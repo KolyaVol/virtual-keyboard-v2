@@ -478,9 +478,11 @@ keyboard.addEventListener("mousedown", (e) => {
       isShift = true;
       if (isRus) {
         currKeyLayout = keyLayoutRu;
+        localStorage.setItem("ru", "ru");
         reloadKeys();
       } else {
         currKeyLayout = keyLayoutEng;
+        localStorage.removeItem("ru");
         reloadKeys();
       }
       if (isShift && isRus) {
@@ -607,9 +609,12 @@ document.addEventListener("keydown", (e) => {
       isShift = true;
       if (isRus) {
         currKeyLayout = keyLayoutRu;
+        localStorage.removeItem("ru");
         reloadKeys();
       } else {
         currKeyLayout = keyLayoutEng;
+        localStorage.setItem("ru", "ru");
+
         reloadKeys();
       }
       if (isShift && isRus) {
@@ -757,4 +762,15 @@ document.addEventListener("keyup", (e) => {
       break;
   }
   removeActiveClass(btn);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem("ru")) {
+    isRus = true;
+    currKeyLayout = keyLayoutRu;
+  }
+  console.log("rus");
+  console.log(isRus);
+  console.log(currKeyLayout);
+  reloadKeys();
 });
