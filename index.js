@@ -97,7 +97,7 @@ const keyLayoutEng = [
   ".",
   "/",
   "br",
-  "up arrow",
+  "↑",
   "shift",
   "ctrl",
   "Win",
@@ -105,9 +105,9 @@ const keyLayoutEng = [
   "space",
   "alt",
   "ctrl",
-  "left arrow",
-  "down arrow",
-  "right arrow",
+  "←",
+  "↓",
+  "→",
 ];
 const keyLayoutEngShift = [
   "~",
@@ -164,7 +164,7 @@ const keyLayoutEngShift = [
   ">",
   "?",
   "br",
-  "up arrow",
+  "↑",
   "shift",
   "ctrl",
   "Win",
@@ -172,9 +172,9 @@ const keyLayoutEngShift = [
   "space",
   "alt",
   "ctrl",
-  "left arrow",
-  "down arrow",
-  "right arrow",
+  "←",
+  "↓",
+  "→",
 ];
 const keyLayoutRu = [
   "ё",
@@ -231,7 +231,7 @@ const keyLayoutRu = [
   "ю",
   ".",
   "br",
-  "up arrow",
+  "↑",
   "shift",
   "ctrl",
   "Win",
@@ -239,9 +239,9 @@ const keyLayoutRu = [
   "space",
   "alt",
   "ctrl",
-  "left arrow",
-  "down arrow",
-  "right arrow",
+  "←",
+  "↓",
+  "→",
 ];
 const keyLayoutRuShift = [
   "Ё",
@@ -298,7 +298,7 @@ const keyLayoutRuShift = [
   "Ю",
   ",",
   "br",
-  "up arrow",
+  "↑",
   "shift",
   "ctrl",
   "Win",
@@ -306,9 +306,9 @@ const keyLayoutRuShift = [
   "space",
   "alt",
   "ctrl",
-  "left arrow",
-  "down arrow",
-  "right arrow",
+  "←",
+  "↓",
+  "→",
 ];
 
 let currKeyLayout = keyLayoutEng;
@@ -438,21 +438,9 @@ const createKeys = () => {
           keyElement.addEventListener("click", () => {});
 
           break;
-        case "left arrow":
-          keyElement.textContent = "←";
-          
-          break;
-        case "right arrow":
-          keyElement.textContent = "→";
-         
-          break;
-        case "up arrow":
-          keyElement.textContent = "↑";
-          
-          break;
-        case "down arrow":
+
           keyElement.textContent = "↓";
-          
+
           break;
         default:
           keyElement.textContent = key;
@@ -591,39 +579,6 @@ keyboard.addEventListener("mousedown", (e) => {
       isAlt = true;
       break;
 
-    case "left arrow":
-      textarea.value += "←";
-      btns.forEach((item) => {
-        if (item.textContent.toLowerCase() === "left arrow") {
-          item.classList.add("active");
-        }
-      });
-      break;
-    case "right arrow":
-      textarea.value += "→";
-      btns.forEach((item) => {
-        if (item.textContent.toLowerCase() === "left arrow") {
-          item.classList.add("active");
-        }
-      });
-      break;
-    case "up arrow":
-      textarea.value += "↑";
-      btns.forEach((item) => {
-        if (item.textContent.toLowerCase() === "left arrow") {
-          item.classList.add("active");
-        }
-      });
-      break;
-    case "down arrow":
-      textarea.value += "↓";
-      btns.forEach((item) => {
-        if (item.textContent.toLowerCase() === "left arrow") {
-          item.classList.add("active");
-        }
-      });
-      break;
-
     default:
       break;
   }
@@ -643,8 +598,7 @@ document.addEventListener("keydown", (e) => {
   let text = textarea.value;
   let btns = [...keyboard.getElementsByClassName("keyboard__key")];
   const btn = btns.find(
-    (btn) =>
-      btn.textContent === e.key || btn.textContent === e.key.toLowerCase()
+    (btn) => btn.textContent.toLowerCase() === e.key.toLowerCase()
   );
   btn ? btn.classList.add("active") : "";
 
@@ -749,7 +703,42 @@ document.addEventListener("keydown", (e) => {
     case "Alt":
       isAlt = true;
       break;
-
+    case "ArrowLeft":
+      textarea.value += "←";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "←") {
+          item.classList.add("active");
+          removeActiveClass(item);
+        }
+      });
+      break;
+    case "ArrowRight":
+      textarea.value += "→";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "→") {
+          item.classList.add("active");
+          removeActiveClass(item);
+        }
+      });
+      break;
+    case "ArrowUp":
+      textarea.value += "↑";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "↑") {
+          item.classList.add("active");
+          removeActiveClass(item);
+        }
+      });
+      break;
+    case "ArrowDown":
+      textarea.value += "↓";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "↓") {
+          item.classList.add("active");
+          removeActiveClass(item);
+        }
+      });
+      break;
     default:
       addText(e.key);
       break;
@@ -759,8 +748,7 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("keyup", (e) => {
   let btns = [...keyboard.getElementsByClassName("keyboard__key")];
   const btn = btns.find(
-    (btn) =>
-      btn.textContent === e.key || btn.textContent === e.key.toLowerCase()
+    (btn) => btn.textContent.toLowerCase() === e.key.toLowerCase()
   );
   switch (e.key) {
     case "Control":
@@ -821,7 +809,4 @@ document.addEventListener("keyup", (e) => {
       break;
   }
   removeActiveClass(btn);
-});
-document.addEventListener("keydown", (e) => {
-  console.log(e);
 });
