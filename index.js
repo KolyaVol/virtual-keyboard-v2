@@ -369,83 +369,7 @@ const createKeys = () => {
       keyElement.setAttribute("type", "button");
       keyElement.classList.add("keyboard__key");
 
-      switch (key) {
-        case "backspace":
-          keyElement.textContent = key;
-          keyElement.addEventListener("click", () => {
-            let text = textarea.value;
-
-            if (
-              selectionStart === textarea.value.length ||
-              selectionStart === 0
-            ) {
-              textarea.value = text.slice(0, textarea.value.length - 1);
-            } else {
-              textarea.value =
-                text.slice(0, selectionStart - 1) +
-                text.slice(selectionStart, textarea.length);
-            }
-            textarea.selectionStart = selectionStart;
-            textarea.selectionEnd = selectionStart;
-            textarea.focus();
-          });
-
-          break;
-
-        case "del":
-          keyElement.textContent = key;
-          keyElement.addEventListener("click", () => {
-            let text = textarea.value;
-            let selectionStartition = textarea.selectionStart;
-            textarea.value =
-              text.slice(0, selectionStartition) +
-              text.slice(selectionStartition + 1, textarea.length);
-          });
-
-          break;
-
-        case "caps":
-          keyElement.addEventListener("click", changeCaps());
-
-          break;
-
-        case "shift":
-          keyElement.textContent = key;
-          keyElement.addEventListener("mousedown", () => {
-            isShift = true;
-            keyElement.addEventListener("mouseup", changeShift());
-            keyElement.removeEventListener("mouseup", changeShift());
-          });
-
-          break;
-
-        case "alt":
-          keyElement.textContent = key;
-          keyElement.addEventListener("mousedown", () => {
-            isAlt = true;
-            keyElement.addEventListener("mouseup", changeAlt());
-            keyElement.removeEventListener("mouseup", changeAlt());
-          });
-          break;
-
-        case "enter":
-          keyElement.textContent = key;
-          keyElement.addEventListener("click", () => {});
-
-          break;
-
-        case "space":
-          keyElement.addEventListener("click", () => {});
-
-          break;
-
-          keyElement.textContent = "↓";
-
-          break;
-        default:
-          keyElement.textContent = key;
-          break;
-      }
+      keyElement.textContent = key;
 
       if (currKeyLayout.indexOf(key) < 14) {
         document.querySelector(".keyboard__first-line").appendChild(keyElement);
@@ -492,6 +416,15 @@ keyboard.addEventListener("mousedown", (e) => {
       textarea.value += "    ";
       btns.forEach((item) => {
         if (item.textContent.toLowerCase() === "tab") {
+          item.classList.add("active");
+        }
+      });
+      break;
+
+    case "space":
+      textarea.value += " ";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "space") {
           item.classList.add("active");
         }
       });
@@ -558,11 +491,7 @@ keyboard.addEventListener("mousedown", (e) => {
       isCaps = !isCaps;
       console.log(isCaps);
       btns.forEach((item) => {
-        if (
-          item.textContent === "Caps Lock" ||
-          item.textContent === "Caps Lock".toUpperCase() ||
-          item.textContent === "Caps Lock".toLowerCase()
-        ) {
+        if (item.textContent.toUpperCase() === "caps lock") {
           item.classList.add("active");
         }
       });
@@ -616,6 +545,15 @@ document.addEventListener("keydown", (e) => {
       btns.forEach((item) => {
         if (item.textContent.toLowerCase() === "tab") {
           item.classList.add("active");
+        }
+      });
+      break;
+    case " ":
+      textarea.value += " ";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "space") {
+          item.classList.add("active");
+          removeActiveClass(item);
         }
       });
       break;
@@ -809,4 +747,7 @@ document.addEventListener("keyup", (e) => {
       break;
   }
   removeActiveClass(btn);
+});
+document.addEventListener("keydown", (e) => {
+  console.log(e);
 });
