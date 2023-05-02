@@ -438,11 +438,24 @@ const createKeys = () => {
           keyElement.addEventListener("click", () => {});
 
           break;
-
+        case "left arrow":
+          keyElement.textContent = "←";
+          
+          break;
+        case "right arrow":
+          keyElement.textContent = "→";
+         
+          break;
+        case "up arrow":
+          keyElement.textContent = "↑";
+          
+          break;
+        case "down arrow":
+          keyElement.textContent = "↓";
+          
+          break;
         default:
           keyElement.textContent = key;
-          keyElement.addEventListener("click", () => {});
-
           break;
       }
 
@@ -490,11 +503,7 @@ keyboard.addEventListener("mousedown", (e) => {
     case "tab":
       textarea.value += "    ";
       btns.forEach((item) => {
-        if (
-          item.textContent === "Tab" ||
-          item.textContent === "TAB" ||
-          item.textContent === "tab"
-        ) {
+        if (item.textContent.toLowerCase() === "tab") {
           item.classList.add("active");
         }
       });
@@ -504,7 +513,7 @@ keyboard.addEventListener("mousedown", (e) => {
       e.preventDefault();
       textarea.value += "\n";
       btns.forEach((item) => {
-        if (item.textContent === "enter" || item.textContent === "ENTER") {
+        if (item.textContent.toLowerCase() === "enter") {
           item.classList.add("active");
         }
       });
@@ -580,6 +589,39 @@ keyboard.addEventListener("mousedown", (e) => {
 
     case "alt":
       isAlt = true;
+      break;
+
+    case "left arrow":
+      textarea.value += "←";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "left arrow") {
+          item.classList.add("active");
+        }
+      });
+      break;
+    case "right arrow":
+      textarea.value += "→";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "left arrow") {
+          item.classList.add("active");
+        }
+      });
+      break;
+    case "up arrow":
+      textarea.value += "↑";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "left arrow") {
+          item.classList.add("active");
+        }
+      });
+      break;
+    case "down arrow":
+      textarea.value += "↓";
+      btns.forEach((item) => {
+        if (item.textContent.toLowerCase() === "left arrow") {
+          item.classList.add("active");
+        }
+      });
       break;
 
     default:
