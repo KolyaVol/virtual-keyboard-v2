@@ -769,8 +769,5 @@ document.addEventListener("DOMContentLoaded", () => {
     isRus = true;
     currKeyLayout = keyLayoutRu;
   }
-  console.log("rus");
-  console.log(isRus);
-  console.log(currKeyLayout);
   reloadKeys();
 });
